@@ -17,7 +17,13 @@ export default function PreviewScreen() {
       <TopBar
         title="Review"
         tone="camera"
-        onBack={router.canGoBack() ? () => router.back() : () => router.dismissTo('/')}
+        onBack={() => {
+          if (router.canGoBack()) {
+            router.back();
+            return;
+          }
+          router.dismissTo('/');
+        }}
       />
       {photo ? (
         <Image
@@ -42,14 +48,20 @@ export default function PreviewScreen() {
             <ActionButton
               label="Retake"
               variant="secondary"
-              onPress={() => (router.canGoBack() ? router.back() : router.dismissTo('/'))}
+              onPress={() => {
+                if (router.canGoBack()) {
+                  router.back();
+                  return;
+                }
+                router.dismissTo('/');
+              }}
             />
           </View>
           <View style={styles.action}>
             <ActionButton
               label="Identify"
               disabled={!photo}
-              onPress={() => router.push('/results')}
+              onPress={() => router.push('/identifying')}
             />
           </View>
         </View>

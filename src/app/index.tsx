@@ -5,7 +5,7 @@ import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActionButton } from '../components/ActionButton';
-import { setSpecimenPhoto } from '../state/capture';
+import { setSpecimenPhoto, useReadings } from '../state/capture';
 import { colors } from '../theme';
 
 export default function CameraScreen() {
@@ -32,6 +32,7 @@ export default function CameraScreen() {
 
 function LiveCamera() {
   const insets = useSafeAreaInsets();
+  const readings = useReadings();
   const cameraRef = useRef<CameraView>(null);
   const capturingRef = useRef(false);
   const [ready, setReady] = useState(false);
@@ -86,9 +87,24 @@ function LiveCamera() {
       />
 
       <View style={styles.overlay} pointerEvents="box-none">
-        <View style={[styles.topCopy, { paddingTop: insets.top + 16 }]} pointerEvents="none">
-          <Text style={styles.brand}>Rock Identifier</Text>
-          <Text style={styles.hint}>Fill the frame with one specimen</Text>
+        <View style={[styles.topCopy, { paddingTop: insets.top + 16 }]}>
+          <View style={styles.topText} pointerEvents="none">
+            <Text style={styles.brand}>Rock Identifier</Text>
+            <Text style={styles.hint}>Fill the frame with one specimen</Text>
+          </View>
+          {readings.length > 0 ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Open recent readings"
+              onPress={() => router.push('/history')}
+              hitSlop={8}
+              style={styles.recent}
+            >
+              <Text style={styles.recentLabel}>Recent</Text>
+            </Pressable>
+          ) : (
+            <View style={styles.recent} />
+          )}
         </View>
 
         <View style={styles.finderWrap} pointerEvents="none">
@@ -161,6 +177,23 @@ const styles = StyleSheet.create({
   },
   topCopy: {
     paddingHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  topText: {
+    flex: 1,
+  },
+  recent: {
+    minWidth: 64,
+    paddingTop: 2,
+    alignItems: 'flex-end',
+  },
+  recentLabel: {
+    color: colors.paper,
+    fontSize: 16,
+    fontWeight: '700',
   },
   brand: {
     color: colors.paper,

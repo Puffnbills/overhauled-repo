@@ -1,45 +1,54 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActionButton } from '../components/ActionButton';
 import { ResultsCard } from '../components/ResultsCard';
 import { TopBar } from '../components/TopBar';
-import { sampleIdentification } from '../data/sampleIdentification';
 import { toImageUri } from '../lib/imageUri';
-import { useSpecimenPhoto } from '../state/capture';
+import { useReading } from '../state/capture';
 import { colors } from '../theme';
 
 export default function ResultsScreen() {
-  const photo = useSpecimenPhoto();
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const reading = useReading(id);
   const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.screen}>
       <TopBar
         title="Identification"
-        onBack={router.canGoBack() ? () => router.back() : undefined}
+        onBack={() => {
+          if (router.canGoBack()) {
+            router.back();
+            return;
+          }
+          router.dismissTo('/');
+        }}
       />
       <ScrollView
         contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 28 }]}
       >
         <View style={styles.column}>
-          {photo ? (
-            <Image
-              accessibilityLabel="Captured specimen"
-              source={{ uri: toImageUri(photo.uri) }}
-              style={styles.photo}
-              resizeMode="cover"
-            />
+          {reading ? (
+            <>
+              <Image
+                accessibilityLabel="Captured specimen"
+                source={{ uri: toImageUri(reading.photo.uri) }}
+                style={styles.photo}
+                resizeMode="cover"
+              />
+              <ResultsCard identification={reading.identification} />
+            </>
           ) : (
             <View style={styles.missingPhoto}>
-              <Text style={styles.missingTitle}>No specimen photo</Text>
+              <Text style={styles.missingTitle}>No reading yet</Text>
               <Text style={styles.missingBody}>
-                Capture a photo to attach it to this reading.
+                Capture a specimen and identify it to open a result.
               </Text>
             </View>
           )}
-          <ResultsCard identification={sampleIdentification} />
           <ActionButton label="New photo" onPress={() => router.dismissTo('/')} />
         </View>
       </ScrollView>
