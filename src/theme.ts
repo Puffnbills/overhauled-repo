@@ -1,0 +1,17 @@
+export const colors = {
+  ink: '#1A1714',
+  inkSoft: '#3C352C',
+  paper: '#F3EEE6',
+  paperRaised: '#FBF8F3',
+  line: '#E4D9C8',
+  moss: '#2C4A3C',
+  mossDeep: '#1E342A',
+  clay: '#8C4630',
+  sand: '#C4A36A',
+  muted: '#6E655C',
+  white: '#FFFFFF',
+  camera: '#0C0B0A',
+  scrim: 'rgba(12, 11, 10, 0.45)',
+  danger: '#F0D2C8',
+  dangerText: '#F6E4DC',
+};
